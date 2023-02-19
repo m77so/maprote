@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+ <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+   
+<script src="https://unpkg.com/topojson-client@3"></script>
+</head>
+<body>
+    <div id="res"></div>
+    <div id="mapid" style=" height: 500px;">
+
+    </div>
+</body>
+<script>
+var map = L.map('mapid', {
+  center: [35.7, 139.7],
+  zoom: 13,
+});
+var myPols = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties":{
+                "name": "三角"
+            },
+            "geometry":
+                {
+                    "type": "Polygon",
+                    "coordinates":[ [[139.7, 35.7], [139.8, 35.7], [139.85, 35.6]]]
+                }
+
+        },
+        {
+            "type": "Feature",
+            "properties":{
+                "name": "三角2"
+            },
+            "geometry":
+                {
+                    "type": "Polygon",
+                    "coordinates":[ [[139.7, 35.7], [139.8, 35.7], [139.55, 35.9]]]
+                }
+
+        },
+]}
+var style = {
+    "color": "#ff0000",
+    "weight": 3,
+    "opacity": .6
+}
+
+var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+});
+tileLayer.addTo(map);
+var onEachFeature = (feature, layer) => {
+
+    layer.on('click', function (e) {
+      console.log(e.sourceTarget.feature.properties.name);
+      document.getElementById("res").innerText = e.sourceTarget.feature.properties.name
+    });
+
+}
+var p = L.geoJSON( myPols, {style, onEachFeature}).addTo(map)
+
+
+</script>
+</html>
