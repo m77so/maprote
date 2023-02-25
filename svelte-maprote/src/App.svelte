@@ -1,12 +1,29 @@
 <script lang="ts">
   import Map from './lib/Map.svelte'
+  import QuestHandler from './lib/QuestHandler.svelte'
+  import j from './a.json'
+  import type { FeatureCollection, GeoJsonObject } from 'geojson';
+  import { Quest, validateQuestJson, type QuestJson } from './lib/Quest';
+  validateQuestJson(j)
+  let map_selected = ""
+  let question = ""
+  const quest = new Quest(j as QuestJson, 20)
 
+  question = quest.next()
+  function onSelected(e) {
+    const {value} = e.detail
+    map_selected = value
+    quest.solve(map_selected)
+    question = quest.next()
+    console.log(quest)
+  }
 
 </script>
 
 <main>
 
-  <Map />
+  <QuestHandler selected={map_selected} question={question} />
+  <Map polygon={quest.geojson} on:selected={onSelected} />
 
 </main>
 

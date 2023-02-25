@@ -1,15 +1,17 @@
 <script lang="ts">
     import L from 'leaflet'
     import 'leaflet/dist/leaflet.css';
-    import * as topojson from 'topojson-client'
     import { onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
 
-    import type { Topology } from 'topojson-specification';
-    import type { FeatureCollection } from 'geojson';
+    import type { QuestJson } from './Quest';
+    export let polygon : QuestJson
+    // export let map_selected = null
 
-    import j01 from '../h27.json'
-    let map: L.Map;
+    let map: L.Map = null;
     let DivMap: HTMLDivElement
+
+    const dispatch = createEventDispatcher()
     function createMap(container: string | HTMLElement): L.Map {
       let m = L.map(container).setView([43.05, 141.25], 13)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -26,30 +28,38 @@
       };
     }
 
-    function addPols() {
-        const pols = topojson.feature((j01 as unknown) as Topology, "town") as unknown as FeatureCollection
+    function addPols(map: L.Map, jsonPols: QuestJson) {
+        if (map === null) return
+        if (jsonPols === undefined) return
+        const pols = jsonPols
 
         const style = {
             "color": "#ff0000",
-            "weight": 3,
+            "weight": 2,
             "opacity": .6
         }
         var onEachFeature = (_: any, layer: L.Layer) => {
 
             layer.on('click', function (e) {
-            console.log(e.sourceTarget.feature.properties);
-            const selected = e.sourceTarget.feature.properties.MOJI
-        });
+                dispatch('selected', {
+                    value: e.sourceTarget.feature.properties.ANSWER
+                })
+            });
 
         }
         L.geoJSON(pols, {style, onEachFeature}).addTo(map)
+        map.fitBounds([
+            [pols.bbox[1], pols.bbox[0]],
+            [pols.bbox[3], pols.bbox[2]]
+        ])
     }
 
 
     onMount(()=>{
         mapAction(DivMap)
-        addPols()
     })
+
+    $: addPols(map, polygon)
 
   
   </script>

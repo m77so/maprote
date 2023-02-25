@@ -1,0 +1,1 @@
+「平成27年国勢調査町丁・字等別境界データ」をもとにNICTが加工した https://geoshape.ex.nii.ac.jp/ka/ 
